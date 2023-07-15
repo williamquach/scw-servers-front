@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { toast, Loader, Breadcrumbs, Separator, Icon } from "@ultraviolet/ui";
+import { toast, Breadcrumbs, Separator, Icon } from "@ultraviolet/ui";
 import { ServerService } from "../../../services/server.service";
 import { useParams } from "react-router-dom";
 import { Server } from "../../../models/server.model";

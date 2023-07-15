@@ -1,5 +1,5 @@
 import { Link, List } from "@ultraviolet/ui";
-import { useEffect, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 // A type that can be used to describe a property of an object for the purpose of sorting.
 type Property<T> = Extract<keyof T, string>;
@@ -23,51 +23,16 @@ type OrderDirection = "asc" | "desc" | "none";
 export function SortableAndClickableTable<T extends Displayable>({
 	itemsReceived,
 	columns,
-	loadingReceived,
+	loading,
 	errorReceived,
 	linkToDetails,
 }: {
 	itemsReceived: T[];
 	columns: Column<T>[];
-	loadingReceived: boolean;
+	loading: boolean;
 	errorReceived: string | null;
 	linkToDetails: string;
 }) {
-	const [items, setItems] = useState<T[]>([]);
-	const [loading, setLoading] = useState<boolean>(false);
-	// const [pagination, setPagination] = useState<PaginationProps<T>>({
-	// 	page: 1,
-	// 	pageCount: 1,
-	// 	pageTabCount: 5,
-	// 	itemsPerPage: 5,
-	// 	data: items.slice(0, 5),
-	// 	onChange: (newPage: number) => {
-	// 		console.log("newPage", newPage);
-	// 		setPagination({
-	// 			...pagination,
-	// 			page: newPage,
-	// 			data: items.slice(
-	// 				(newPage - 1) * pagination.itemsPerPage,
-	// 				newPage * pagination.itemsPerPage
-	// 			),
-	// 		});
-	// 	},
-	// });
-	useEffect(() => {
-		setLoading(loadingReceived);
-		setItems(itemsReceived);
-		// setPagination({
-		// 	...pagination,
-		// 	pageCount: Math.ceil(
-		// 		itemsReceived.length / pagination.itemsPerPage
-		// 	),
-		// 	data: items.slice(
-		// 		pagination.itemsPerPage * (pagination.page - 1),
-		// 		pagination.itemsPerPage * pagination.page
-		// 	),
-		// });
-	}, [itemsReceived, loadingReceived]);
-
 	const [currentSortingProperties, setCurrentSortingProperties] = useState<{
 		orderDirection: OrderDirection;
 		property: Property<T>;
@@ -76,30 +41,42 @@ export function SortableAndClickableTable<T extends Displayable>({
 		property: columns[0].itemPropertyToDisplay,
 	});
 
-	const handleSort = (newOrder: OrderDirection, property: Property<T>) => {
+	const sortItems = useCallback(
+		(items: T[], newOrder: OrderDirection, property: Property<T>) => {
+			const sortedItems = [...items].sort((a, b) => {
+				if (newOrder === "asc") {
+					return a[property] > b[property] ? 1 : -1;
+				} else if (newOrder === "desc") {
+					return a[property] < b[property] ? 1 : -1;
+				} else {
+					return 0;
+				}
+			});
+
+			return sortedItems;
+		},
+		[]
+	);
+
+	const sortedData = useMemo(() => {
+		return sortItems(
+			itemsReceived,
+			currentSortingProperties.orderDirection,
+			currentSortingProperties.property
+		);
+	}, [itemsReceived, currentSortingProperties, sortItems]);
+
+	const handleSort = (
+		items: T[],
+		newOrder: OrderDirection,
+		property: Property<T>
+	) => {
 		setCurrentSortingProperties({
 			orderDirection: newOrder,
 			property: property,
 		});
 
-		const sortedItems = [...items].sort((a, b) => {
-			if (newOrder === "asc") {
-				return a[property] > b[property] ? 1 : -1;
-			} else if (newOrder === "desc") {
-				return a[property] < b[property] ? 1 : -1;
-			} else {
-				return 0;
-			}
-		});
-
-		setItems(sortedItems);
-		// setPagination({
-		// 	...pagination,
-		// 	data: sortedItems.slice(
-		// 		(pagination.page - 1) * pagination.itemsPerPage,
-		// 		pagination.page * pagination.itemsPerPage
-		// 	),
-		// });
+		return sortItems(items, newOrder, property);
 	};
 
 	const computeOrderDirection = (
@@ -136,7 +113,11 @@ export function SortableAndClickableTable<T extends Displayable>({
 					column.itemPropertyToDisplay
 				),
 				onOrder: (newOrder: "asc" | "desc") => {
-					handleSort(newOrder, column.itemPropertyToDisplay);
+					handleSort(
+						itemsReceived,
+						newOrder,
+						column.itemPropertyToDisplay
+					);
 				},
 				isOrdered: isColumnOrdered(column.itemPropertyToDisplay),
 			};
@@ -170,7 +151,7 @@ export function SortableAndClickableTable<T extends Displayable>({
 							</List.Cell>
 						</List.Row>
 					)}
-					{items.map((item) => (
+					{sortedData.map((item) => (
 						<List.Row
 							key={item.id}
 							id={item.id}

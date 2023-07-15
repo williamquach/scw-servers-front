@@ -60,7 +60,7 @@ export function ServersPage() {
 				<div className="flex flex-col items-center p-4">
 					<SortableAndClickableTable
 						linkToDetails="/servers"
-						loadingReceived={loading}
+						loading={loading}
 						errorReceived={error}
 						itemsReceived={servers}
 						columns={[
