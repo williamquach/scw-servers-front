@@ -6,12 +6,12 @@ type Property<T> = Extract<keyof T, string>;
 
 // The shape of an object that can be displayed by the GenericDataTable component.
 interface Displayable {
-	id: string;
+	id: string | number;
 	[key: string]: any;
 }
 
 // The shape of a column object used to define the table columns in the GenericDataTable component.
-interface Column<T extends Displayable> {
+export interface Column<T extends Displayable> {
 	label: string;
 	itemPropertyToDisplay: Property<T>;
 	canBeOrdered: boolean;
@@ -20,19 +20,25 @@ interface Column<T extends Displayable> {
 
 type OrderDirection = "asc" | "desc" | "none";
 
+export interface SortableAndClickableTableProps<T extends Displayable> {
+	itemsReceived: T[];
+	columns: Column<T>[];
+	loading: boolean;
+	errorReceived: string | null;
+	linkToDetails: string;
+}
+
 export function SortableAndClickableTable<T extends Displayable>({
 	itemsReceived,
 	columns,
 	loading,
 	errorReceived,
 	linkToDetails,
-}: {
-	itemsReceived: T[];
-	columns: Column<T>[];
-	loading: boolean;
-	errorReceived: string | null;
-	linkToDetails: string;
-}) {
+}: SortableAndClickableTableProps<T>) {
+	if (columns.length === 0) {
+		throw new Error("No columns provided");
+	}
+
 	const [currentSortingProperties, setCurrentSortingProperties] = useState<{
 		orderDirection: OrderDirection;
 		property: Property<T>;
@@ -132,52 +138,55 @@ export function SortableAndClickableTable<T extends Displayable>({
 
 	return (
 		<>
-			<div className="flex flex-col items-center w-full p-4 gap-5">
-				<List
-					loading={loading}
-					columns={[
-						...columns.map((column) => generateColumn(column)),
-						{
-							label: "Actions",
-						},
-					]}
-				>
-					{errorReceived && (
-						<span className="text-red-500 text-center font-bold">
-							{errorReceived}
-						</span>
-					)}
-					{sortedData.map((item) => (
-						<List.Row
-							key={item.id}
-							id={item.id}
-							className="text-start"
-						>
-							{columns.map((column) => (
-								<List.Cell
-									key={column.itemPropertyToDisplay}
-									preventClick
-								>
+			<div className="flex flex-col items-start w-full gap-5">
+				{errorReceived && (
+					<span className="text-red-500 text-start font-bold">
+						{errorReceived}
+					</span>
+				)}
+				{!errorReceived && (
+					<List
+						loading={loading}
+						columns={[
+							...columns.map((column) => generateColumn(column)),
+							{
+								label: "Actions",
+							},
+						]}
+					>
+						{sortedData.map((item) => (
+							<List.Row
+								key={item.id}
+								id={item.id.toString()}
+								className="text-start"
+							>
+								{columns.map((column) => (
+									<List.Cell
+										key={column.itemPropertyToDisplay}
+										preventClick
+									>
+										<Link
+											href={`${linkToDetails}/${item.id}`}
+											sentiment="neutral"
+											prominence="weak"
+										>
+											{item[column.itemPropertyToDisplay]}
+										</Link>
+									</List.Cell>
+								))}
+								<List.Cell>
 									<Link
 										href={`${linkToDetails}/${item.id}`}
-										sentiment="neutral"
-										prominence="weak"
+										iconPosition="right"
 									>
-										{item[column.itemPropertyToDisplay]}
+										Details
 									</Link>
 								</List.Cell>
-							))}
-							<List.Cell>
-								<Link
-									href={`${linkToDetails}/${item.id}`}
-									iconPosition="right"
-								>
-									Details
-								</Link>
-							</List.Cell>
-						</List.Row>
-					))}
-				</List>
+							</List.Row>
+						))}
+					</List>
+				)}
+
 				{/* <Pagination
 					page={pagination.page}
 					pageCount={pagination.pageCount}
