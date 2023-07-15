@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import { ServersPage } from "./components/servers/Servers";
-import { ServerDetailsPage } from "./components/servers/details/ServerDetails";
-import { NewServerPage } from "./components/servers/new/NewServer";
+import { ServerDetailsPage } from "./components/servers/details/ServerDetailsPage";
+import { NewServerPage } from "./components/servers/new/NewServerPage";
 import { NoMatch } from "./components/shared/errors/no-match";
 import { Home } from "./components/Home";
 import "./App.css";
