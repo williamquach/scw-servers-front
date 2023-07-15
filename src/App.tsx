@@ -1,26 +1,21 @@
+import { Route, Routes } from "react-router-dom";
+import { ServersPage } from "./components/servers/Servers";
+import { ServerDetailsPage } from "./components/servers/details/ServerDetails";
+import { NewServerPage } from "./components/servers/new/NewServer";
+import { NoMatch } from "./components/shared/no-match";
+import { Home } from "./components/Home";
 import "./App.css";
-import { Button } from "@ultraviolet/ui";
-import { useNavigate } from "react-router-dom";
 
 function App() {
-	const navigate = useNavigate();
-
 	return (
-		<>
-			<div className="flex flex-col items-center gap-4 justify-center m-20">
-				<h1 className="text-4xl font-bold p-4 text-center">Home</h1>
-				<Button
-					onClick={() => {
-						navigate("/servers");
-					}}
-					sentiment="primary"
-					role="link"
-					icon="arrow-right"
-				>
-					Go to servers
-				</Button>
-			</div>
-		</>
+		<Routes>
+			<Route path="/" element={<Home />} />
+			<Route path="/servers" element={<ServersPage />} />
+			<Route path="servers/:serverId" element={<ServerDetailsPage />} />
+			<Route path="servers/new" element={<NewServerPage />} />
+
+			<Route path="*" element={<NoMatch />} />
+		</Routes>
 	);
 }
 

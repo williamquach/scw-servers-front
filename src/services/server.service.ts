@@ -9,11 +9,7 @@ import { CreateServerDto } from "../components/servers/new/create-server.dto";
 import { CreateServerError } from "../errors/create-server.error";
 
 export class ServerService {
-	private API_URL: string;
-
-	constructor() {
-		this.API_URL = getServersApiUrl();
-	}
+	private API_URL = getServersApiUrl();
 
 	init() {
 		return axios.create({
