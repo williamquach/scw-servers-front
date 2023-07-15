@@ -1,5 +1,15 @@
 # Scaleway Homework - Servers web app
 
+## Fill environment variables
+```bash
+cp .env.example .env
+```
+
+## Install dependencies
+```bash
+pnpm install
+```
+
 ## Start the web react / vite app
 ```bash
 pnpm run start:local
