@@ -143,13 +143,9 @@ export function SortableAndClickableTable<T extends Displayable>({
 					]}
 				>
 					{errorReceived && (
-						<List.Row key={"error"} id="error" sentiment="danger">
-							<List.Cell>
-								<span className="text-red-500">
-									{errorReceived}
-								</span>
-							</List.Cell>
-						</List.Row>
+						<span className="text-red-500 text-center font-bold">
+							{errorReceived}
+						</span>
 					)}
 					{sortedData.map((item) => (
 						<List.Row

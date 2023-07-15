@@ -31,10 +31,12 @@ export function ServerDetailsPage() {
 				setServer(server);
 			})
 			.catch((error) => {
-				setError(error.message);
 				console.error(error);
+				setError(
+					"An error occurred while loading the server, please try again later or contact support"
+				);
 				toast.error(
-					"Could not load server, please try again later or contact support"
+					"Could not load server, please try again later or contact support 🧐"
 				);
 			})
 			.finally(() => {
@@ -56,8 +58,10 @@ export function ServerDetailsPage() {
 					Server details
 				</h1>
 				{error && (
-					<div className="flex flex-col items-center p-4">
-						<span className="text-red-500">{error}</span>
+					<div className="flex flex-col items-start p-4">
+						<span className="text-red-500 text-start font-bold">
+							{error}
+						</span>
 					</div>
 				)}
 				<div className="flex flex-col items-start p-4">

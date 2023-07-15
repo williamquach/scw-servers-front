@@ -47,9 +47,9 @@ export function NewServerPage() {
 				navigate(`/servers/${server.id}`);
 			})
 			.catch((error) => {
-				console.error(error);
+				console.log(error);
 				toast.error(
-					"Could not create server, please try again later or contact support"
+					"Could not create server, please try again later or contact support 🧐"
 				);
 			})
 			.finally(() => {

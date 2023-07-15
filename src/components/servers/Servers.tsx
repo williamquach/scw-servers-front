@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast, Button, Breadcrumbs } from "@ultraviolet/ui";
 import { ServerService } from "../../services/server.service";
-import { SortableAndClickableTable } from "../shared/sortable-and-clickable-table";
+import { SortableAndClickableTable } from "../shared/data-display/sortable-and-clickable-table";
 import { Server } from "../../models/server.model";
 
 export function ServersPage() {
@@ -25,10 +25,12 @@ export function ServersPage() {
 				setServers(servers);
 			})
 			.catch((error) => {
-				setError(error.message);
 				console.error(error);
+				setError(
+					"An error occurred while loading servers, please try again later or contact support"
+				);
 				toast.error(
-					"Could not load servers, please try again later or contact support"
+					"Could not load servers, please try again later or contact support 🧐"
 				);
 			})
 			.finally(() => {
